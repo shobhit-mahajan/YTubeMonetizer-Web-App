@@ -1,7 +1,7 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
 const cors = require('cors');
-const dotenv = require('dotenv').config()
+const dotenv = require('dotenv').config();
 
 const app = express();
 
@@ -18,19 +18,18 @@ app.get('/checkMonetization', async (req, res) => {
 
   try {
     // Launch Puppeteer in serverless-friendly configuration
-     const browser = await puppeteer.launch({
-    args: [
-      "--disable-setuid-sandbox",
-      "--no-sandbox",
-      "--single-process",
-      "--no-zygote",
-    ],
-    executablePath:
-      process.env.NODE_ENV === "production"
-        ? process.env.PUPPETEER_EXECUTABLE_PATH
-        : puppeteer.executablePath(),
-  });
+    const browser = await puppeteer.launch({
+      args: [
+        "--disable-setuid-sandbox",
+        "--no-sandbox",
+        "--single-process",
+        "--no-zygote",
+      ],
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath(),
+    });
+
     const page = await browser.newPage();
+
     // Navigate to the YouTube video page
     await page.goto(videoUrl, { waitUntil: 'networkidle2' });
 
@@ -39,6 +38,7 @@ app.get('/checkMonetization', async (req, res) => {
 
     // Get the page content (HTML)
     const content = await page.content();
+
     // Check for monetization marker in the HTML content
     const isMonetized = content.includes('"key":"yt_ad","value":"1"');
 
